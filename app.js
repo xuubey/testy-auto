@@ -1,7 +1,8 @@
 const bodyParser = require('body-parser');
 const express = require('express');
 
-const todo = require('./todo');
+const {respondNotFound} = require('./helper');
+const todoApi = require('./todoApi');
 
 const app = express();
 
@@ -9,19 +10,18 @@ app.set('x-powered-by', false);
 app.use(bodyParser.json());
 
 
-app.get('/', todo.list);
-app.post('/', todo.create);
-app.put('/:id', todo.change);
-app.delete('/:id', todo.delete);
-app.post('/:id/toggle', todo.toggle);
+app.get('/', todoApi.list);
+app.post('/', todoApi.create);
+app.put('/:id', todoApi.change);
+app.delete('/:id', todoApi.delete);
+app.post('/:id/toggle', todoApi.toggle);
 
 
 app.get('*', (req, res) => {
-    res.status(404);
-    res.send('Not found')
+    respondNotFound(res);
 });
 
-app.use((err, req, res, next) => {
+app.use((error, req, res, next) => {
     console.log(error.stack);
     res.status(500);
     res.send(`
