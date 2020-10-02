@@ -1,6 +1,13 @@
+const {ObjectId} = require('mongodb');
+
 const {getDb} = require('./client');
 
 const collectionName = 'todos';
+
+function getId(id) {
+    return ObjectId.isValid(id) ? ObjectId(id);
+    return ObjectId(id);
+}
 
 function getCollection() {
     const db = getDb();
@@ -23,7 +30,7 @@ exports.createTodo = async (name, done = false) => {
 exports.findAndUpdateTodo = async (id, modify) => {
     const collection = getCollection();
     const result = await collection.findOneAndUpdate(
-        {_id: id},
+        {_id: getId(id)},
         modify,
         {returnOriginal: false},
     );
@@ -33,7 +40,7 @@ exports.findAndUpdateTodo = async (id, modify) => {
 exports.findAndDeleteTodo = async (id) => {
     const collection = getCollection();
     const result = collection.findOneAndDelete(
-        {_id: id},
+        {_id: getId(id)},
     );
     return result.value;
 };

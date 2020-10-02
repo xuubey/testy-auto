@@ -2,7 +2,12 @@
 const request = require('supertest');
 
 const { app } = require('./app');
+const {connect, disconnect, drop} = require('./client');
 
+
+beforeAll(connect);
+afterAll(disconnect);
+beforeEach(drop);
 
 it('works', async () => {
     const response = await request(app).get('/');
@@ -21,9 +26,9 @@ it('updates a todo', async () => {
     const createdTodo = JSON.parse(createResponse.text);
     expect(createdTodo).toMatchObject({name, done: false});
 
-    const id = createdTodo.id;
+    const {_id} = createdTodo;
     const nextName = 'Lunch';
-    const response = await request(app).put(`/${id}`).send({ name: nextName });
+    const response = await request(app).put(`/${_id}`).send({ name: nextName });
 
     expect(response.status).toEqual(200);
     expect(response.header['content-type']).toEqual('application/json; charset=utf-8');
